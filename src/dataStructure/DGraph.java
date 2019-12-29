@@ -23,6 +23,7 @@ public class DGraph implements graph, Serializable{
 			this.dest=dest;
 			this.src=src;
 			this.weight=weight;
+			this.info = "";
 			}
 		
 		public int getDest() {
@@ -82,7 +83,27 @@ public class DGraph implements graph, Serializable{
 		public Node(int key, double weight) {
 			adjList = new HashMap<Integer, edge_data>();
 			this.key = key;
-			this.weight = weight;			
+			this.weight = weight;	
+			info = "";
+			
+			double rand = Math.random();
+			double x = rand*(615)+120;
+			rand = Math.random();
+			double y = rand*(630)+100;
+
+			Point3D p = new Point3D(x,y);
+			
+			this.location = p;
+		}
+		public Node(int key, double weight, double x, double y) {
+			adjList = new HashMap<Integer, edge_data>();
+			this.key = key;
+			this.weight = weight;	
+			info = "";
+			
+			Point3D p = new Point3D(x+150, y+50);
+			this.location=p;
+			
 		}
 		
 		
@@ -94,18 +115,13 @@ public class DGraph implements graph, Serializable{
 		}
 		public edge_data removeEdge(int keyDest) {
 			edge_data e = adjList.remove(keyDest);
-			if(e!=null) {
-				edgeCount--;
-			}
 			return e;
 		}
-		public void removeAllEdges() {
-			ArrayList <edge_data> edges = new ArrayList<edge_data>(adjList.values());
-			Iterator <edge_data> iter = edges.iterator();
-			while(iter.hasNext()) {
-				edge_data e = adjList.remove(iter.next().getDest());  //more than 1 edge to same destination?
-				edgeCount--;
-			}			
+		public int removeAllEdges() {
+			//ArrayList <edge_data> edges = new ArrayList<edge_data>(adjList.values());
+			int toRemove = adjList.values().size();		
+			return toRemove;
+
 		}
 		@Override
 		public int getKey() {
@@ -171,15 +187,16 @@ public class DGraph implements graph, Serializable{
 	//map <src, map<dest, edge_data>>
 	Map<Integer, node_data> graph; //key is src/key
 		
-	static int vertixCount;
-	static int edgeCount;
-	
+	int vertixCount;
+	int edgeCount;
+	int modeCount;
 	
 	
 	public DGraph() {
 		graph = new HashMap<Integer, node_data>();
 		vertixCount = 0;
 		edgeCount = 0;
+		modeCount = 0;
 	}
 	
 	
@@ -201,24 +218,35 @@ public class DGraph implements graph, Serializable{
 
 	@Override
 	public void addNode(node_data n) {
+		int id = n.getKey();
+		if(graph.containsKey(id)) {
+			return;
+		}
 		int key = n.getKey();
-		graph.put(key, (Node) n);
-		vertixCount++;
+		graph.put(key, n);
+		increaseVertexCount();
+		increaseModeCount();
 	}
 
+	private void increaseModeCount() {
+		modeCount++;
+	}
+
+
 	@Override
-	public void connect(int src, int dest, double w) {
+	public void connect(int src, int dest, double w) throws RuntimeException{
 		if(this.getEdge(src, dest)!=null) {
 			return;
 		}
 		node_data source = graph.get(src);
 		//node_data destination =graph.get(dest);
 		if(source==null || graph.get(dest)==null) {  //2nd condition raises runtime by a factor 2-3
-			return;
+			throw new RuntimeException("source/destination node does not exist");
 		}
 		Edge edge = new Edge(dest, src, w);
 		((Node) source).setEdge(dest, edge);
-		edgeCount++;
+		increaseEdgeCount();
+		increaseModeCount();
 	}
 
 	@Override
@@ -240,12 +268,19 @@ public class DGraph implements graph, Serializable{
 		if(nD==null) {
 			return null;
 		}
-		((Node) nD).removeAllEdges();
+		int toRemove = ((Node) nD).removeAllEdges();
 		for(Map.Entry<Integer, node_data> entry : graph.entrySet()) {
 			node_data vertix = entry.getValue();
-			((Node) vertix).removeEdge(key);
+			if(null!=((Node) vertix).removeEdge(key));
+				decreaseEdgeCount();
+				increaseModeCount();
 		}
-		vertixCount--;
+		for(int i=0;i<toRemove;i++) {
+			decreaseEdgeCount();
+			increaseModeCount();
+		}
+		decreaseVertexCount();
+		increaseModeCount();
 		return nD;
 	}
 
@@ -261,6 +296,19 @@ public class DGraph implements graph, Serializable{
 	public int nodeSize() {
 		return vertixCount;
 	}
+	
+	private void increaseVertexCount() {
+		vertixCount++;
+	}
+	private void increaseEdgeCount() {
+		edgeCount++;
+	}
+	private void decreaseVertexCount() {
+		vertixCount--;
+	}
+	private void decreaseEdgeCount() {
+		edgeCount--;
+	}
 
 	@Override
 	public int edgeSize() {
@@ -269,8 +317,7 @@ public class DGraph implements graph, Serializable{
 
 	@Override
 	public int getMC() {
-		// TODO Auto-generated method stub
-		return 0;
+		return modeCount;
 	}
 	
 	public String toString() {
