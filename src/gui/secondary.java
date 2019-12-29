@@ -21,6 +21,7 @@ public class secondary extends JFrame{
 		setTitle("Graph GUI");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 		
 		
 		Container pane = getContentPane();

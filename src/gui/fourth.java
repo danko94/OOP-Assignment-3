@@ -34,11 +34,11 @@ public class fourth extends JFrame implements MouseListener {
 	JButton shortestPathDist;
 	JButton tsp;
 	JButton isConnected;
-	
+
 	JButton removeNode;
 	JButton removeEdge;
 	JButton addEdge;
-	
+
 	JButton exit;
 
 
@@ -53,7 +53,7 @@ public class fourth extends JFrame implements MouseListener {
 		this.graph = graph;
 
 		//Container pane = getContentPane();
-		
+
 		menubar = new JMenuBar();
 		menuFile = new JMenu("file");
 
@@ -63,22 +63,22 @@ public class fourth extends JFrame implements MouseListener {
 		mainPanel.setLayout(new BorderLayout(4,4));
 
 		GridBagLayout gridLayout = new GridBagLayout();
-		JPanel cards = new JPanel(gridLayout);
-		cards.setBorder(new TitledBorder("Graph"));
-		mainPanel.add(cards);
+		JPanel graphs = new JPanel(gridLayout);
+		graphs.setBorder(new TitledBorder("Graph"));
+		mainPanel.add(graphs);
 
 		//pane.setLayout(new FlowLayout());
 		setSize(HEIGHT,WIDTH);
 		setLocationRelativeTo(null);
 		setTitle("Draw Graph from file");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		cards.addMouseListener(this);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		graphs.addMouseListener(this);
 		menubar.add(menuFile);
 		mainPanel.add(menubar, BorderLayout.BEFORE_FIRST_LINE);
-		
-		cards.setBackground(Color.LIGHT_GRAY);
+
+		graphs.setBackground(Color.LIGHT_GRAY);
 
 
 
@@ -93,11 +93,11 @@ public class fourth extends JFrame implements MouseListener {
 		save = new JButton("save");
 		shortestPath = new JButton("shortest path");
 		isConnected = new JButton("strongly connected");
-		
+
 		removeEdge = new JButton("remove Edge");
 		removeNode = new JButton("remove Node");
 		addEdge = new JButton("add Edge");
-		
+
 		exit = new JButton("QUIT");
 
 		//BUTTONS LISTENERS
@@ -209,15 +209,15 @@ public class fourth extends JFrame implements MouseListener {
 
 			}
 		});
-		
-		tsp.addActionListener(new ActionListener() {
-			
+
+		tsp.addActionListener(new ActionListener() {					//DOESNT WORK
+
 			int amount = 0;
 			LinkedList<Integer> mustPass = new LinkedList<Integer>();
 			boolean flag = true;
 			graph dgraph = graph.getGraph();
 			String input = "";
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				input = JOptionPane.showInputDialog("enter amount of vertices to pass through");
@@ -237,7 +237,7 @@ public class fourth extends JFrame implements MouseListener {
 							if(n==null) {
 								throw new RuntimeException();
 							}
-							
+
 						} catch (Exception e2) {
 							JOptionPane.showMessageDialog(mainPanel, "invalid input", "error",JOptionPane.WARNING_MESSAGE);
 							flag=false;
@@ -266,37 +266,37 @@ public class fourth extends JFrame implements MouseListener {
 						repaint();
 					}
 				}
-				
+
 			}
-			
+
 		});
 
 		exit.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
-				
+
 			}
 		});
 
 		addEdge.addActionListener(new ActionListener() { 
-			
 
-			
+
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 
 				int src=-1, dest=-1;
 				boolean flag = true;
 				double weight=-1;
-				
+
 				graph dgraph = graph.getGraph();
 				String srcString = JOptionPane.showInputDialog("Enter source node ID");
 				String destString = JOptionPane.showInputDialog("Enter destination node ID");
 				String weightString =  JOptionPane.showInputDialog("Enter weight of edge");
-				
+
 				try {
 					src = Integer.parseInt(srcString);
 					dest = Integer.parseInt(destString);
@@ -304,12 +304,12 @@ public class fourth extends JFrame implements MouseListener {
 					if(weight<0) {
 						throw new RuntimeException();
 					}
-					
+
 				} catch (Exception e2) {
 					flag = false;
 					JOptionPane.showMessageDialog(mainPanel, "invalid input", "error",JOptionPane.WARNING_MESSAGE);
 				}
-				
+
 				if(flag) {
 					try {
 						dgraph.connect(src, dest, weight);
@@ -321,53 +321,101 @@ public class fourth extends JFrame implements MouseListener {
 				}
 			}
 		});
-		
-		removeEdge.addActionListener(new ActionListener() {
-			
-			int dest,src=-1;
-			
-			boolean flag = true;
-			
-			graph dgraph = graph.getGraph();
 
-			
-			
+		removeEdge.addActionListener(new ActionListener() {
+
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				int dest=-1,src=-1;
+
+				boolean flag = true;
+
+				graph dgraph = graph.getGraph();
+
 				String srcString = JOptionPane.showInputDialog("Enter source node ID");
 				String destString = JOptionPane.showInputDialog("Enter destination node ID");
-				
+
 				try {
 					src = Integer.parseInt(srcString);
 					dest = Integer.parseInt(destString);
-					
-					
+
+
 				} catch (Exception e2) {
 					flag = false;
 					JOptionPane.showMessageDialog(mainPanel, "invalid input", "error",JOptionPane.WARNING_MESSAGE);
 				}
-				
+
 				if(flag) {
 					if(null==dgraph.removeEdge(src, dest)){
 						JOptionPane.showMessageDialog(mainPanel, "edge does not exist", "error",JOptionPane.WARNING_MESSAGE);
 					}
 					repaint();
-					
+
 				}
-				
+
 			}
 		});
-		
+
+		removeNode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				int id = -1;
+
+				boolean flag = true;
+
+				graph dgraph = graph.getGraph();
+
+				String idString = JOptionPane.showInputDialog("Enter source ID to remove");
+
+				try {
+					id = Integer.parseInt(idString);
+					if(null==dgraph.removeNode(id)) {
+						throw new RuntimeException();
+					}
+
+				} catch (Exception e2) {
+					flag = false;
+					JOptionPane.showMessageDialog(mainPanel, "edge does not exist", "error",JOptionPane.WARNING_MESSAGE);
+				}
+
+				if(flag) {
+					repaint();
+					//JOptionPane.showMessageDialog(mainPanel, "Specified node deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+				}
+
+
+			}
+		});
+
+		isConnected.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				boolean connected = graph.isConnected();
+				if(connected) {
+					
+					JOptionPane.showMessageDialog(mainPanel,  "The graph is strongly connected");
+
+				}
+				else {
+					JOptionPane.showMessageDialog(mainPanel,  "The graph is not strongly connected");
+				}
+			}
+		});
+
 		//BUTTONS config and add to panel
-		save.setPreferredSize(new Dimension(90,YDIMENSION));
-		tsp.setPreferredSize(new Dimension(90,YDIMENSION));
-		addEdge.setPreferredSize(new Dimension(90,YDIMENSION));
-		shortestPath.setPreferredSize(new Dimension(90, YDIMENSION));
-		removeNode.setPreferredSize(new Dimension(90, YDIMENSION));
-		isConnected.setPreferredSize(new Dimension(90,YDIMENSION));
-		shortestPathDist.setPreferredSize(new Dimension(150,YDIMENSION));
-		exit.setPreferredSize(new Dimension(90,YDIMENSION));
+		save.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
+		tsp.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
+		addEdge.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
+		shortestPath.setPreferredSize(new Dimension(XDIMENSION, YDIMENSION));
+		removeNode.setPreferredSize(new Dimension(XDIMENSION, YDIMENSION));
+		isConnected.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
+		shortestPathDist.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
+		exit.setPreferredSize(new Dimension(XDIMENSION,YDIMENSION));
 
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BorderLayout());
@@ -386,11 +434,11 @@ public class fourth extends JFrame implements MouseListener {
 		subSubPanelTop.add(exit,BorderLayout.NORTH);
 		subSubPanelTop.add(tsp,BorderLayout.CENTER);
 		subSubPanelTop.add(save,BorderLayout.SOUTH);
-		
+
 		subSubPanelBot.add(shortestPath, BorderLayout.NORTH);
 		subSubPanelBot.add(shortestPathDist, BorderLayout.CENTER);
 		subSubPanelBot.add(isConnected, BorderLayout.SOUTH);
-		
+
 		subSubPanelMid.add(addEdge, BorderLayout.NORTH);
 		subSubPanelMid.add(removeEdge);
 		subSubPanelMid.add(removeNode, BorderLayout.SOUTH);
@@ -414,7 +462,6 @@ public class fourth extends JFrame implements MouseListener {
 
 
 
-		//g.setColor(Color.cyan);
 
 		Graphics2D g2 = (Graphics2D)g;
 
@@ -453,8 +500,8 @@ public class fourth extends JFrame implements MouseListener {
 				g.setColor(Color.DARK_GRAY);
 
 				g.drawString(""+edge.getWeight(), (int)((p.x()+pDest.x())/2)+7,(int)((p.y()+pDest.y())/2)+7);
-				
-				
+
+
 
 
 			}
@@ -476,27 +523,27 @@ public class fourth extends JFrame implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
+
 		double weight;
 		DGraph.Node newNode ;
-		
+
 		int x = e.getX();
 		int y = e.getY();
-		
+
 		Point3D point = new Point3D(x,y);
 		graph dgraph = graph.getGraph();
-		
-		
+
+
 		int id = dgraph.nodeSize()+1;
-		
-		int input = JOptionPane.showConfirmDialog(mainPanel, "create new vertex?", "new vertex", JOptionPane.YES_NO_OPTION);
+
+		int input = JOptionPane.showConfirmDialog(mainPanel, "Create new node?", "New Node", JOptionPane.YES_NO_OPTION);
 		if(input == JOptionPane.YES_OPTION) {
-			String weightString = JOptionPane.showInputDialog("Enter weight(positive real number)");
+			String weightString = JOptionPane.showInputDialog("Enter weight (positive real number)");
 			try {
 				weight=Double.parseDouble(weightString);
 				if(weight<0) {
@@ -510,27 +557,27 @@ public class fourth extends JFrame implements MouseListener {
 				JOptionPane.showMessageDialog(mainPanel, "invalid input", "error",JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

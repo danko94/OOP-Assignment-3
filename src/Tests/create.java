@@ -26,10 +26,15 @@ public class create {
 			for(int j=0;j<randj;j++) { 
 				int rand = (int)((Math.random() * (((30-1) - 1) + 1)) + 1); 
 				int randw = (int)((Math.random() * (((20-1) - 1) + 1)) + 1); 
-				dG.connect(i, rand, randw); 
+				try {
+					dG.connect(i, rand, randw); 
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 				} 
 		}
-		dG.connect(1, 30, 2); //dG.toString();
+		//dG.connect(1, 30, 2); //dG.toString();
 		
 		Graph_Algo algo = new Graph_Algo();
 		algo.init(dG);
