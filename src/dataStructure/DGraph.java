@@ -87,7 +87,7 @@ public class DGraph implements graph, Serializable{
 			info = "";
 			
 			double rand = Math.random();
-			double x = rand*(615)+120;
+			double x = rand*(580)+150;
 			rand = Math.random();
 			double y = rand*(630)+100;
 

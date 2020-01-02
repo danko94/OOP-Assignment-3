@@ -29,7 +29,8 @@ public class third extends JFrame{
 		setSize(400,300);
 		setTitle("Load");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
 		
 		loadGraphLabel = new JLabel("Load graph");
 		fChooser = new JButton("Load using file chooser");

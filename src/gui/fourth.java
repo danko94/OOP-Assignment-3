@@ -40,6 +40,8 @@ public class fourth extends JFrame implements MouseListener {
 	JButton addEdge;
 
 	JButton exit;
+	
+	JMenuItem load;
 
 
 	private final int XDIMENSION = 150;
@@ -56,6 +58,10 @@ public class fourth extends JFrame implements MouseListener {
 
 		menubar = new JMenuBar();
 		menuFile = new JMenu("file");
+		
+		load = new JMenuItem("load graph from file");
+		
+		menuFile.add(load);
 
 		mainPanel = new JPanel();
 		setContentPane(mainPanel);
@@ -99,15 +105,64 @@ public class fourth extends JFrame implements MouseListener {
 		addEdge = new JButton("add Edge");
 
 		exit = new JButton("QUIT");
+		
+		//MENU LISTENERS
+		
+		load.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				boolean flag=true;
+				graph dgraph = graph.getGraph();
+
+				
+				int save = JOptionPane.showConfirmDialog(mainPanel, "Do you want to save your graph?", "Unsaved data", JOptionPane.YES_NO_CANCEL_OPTION);
+				if(save == JOptionPane.YES_OPTION) {					
+					String graphFilename = "";
+
+					graphFilename = JOptionPane.showInputDialog("enter filename");
+
+					try {
+						graph.save(graphFilename);
+
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(mainPanel, "Error occured", "ERROR",JOptionPane.ERROR_MESSAGE);
+					}					
+				}
+				else if(save == JOptionPane.CANCEL_OPTION) {
+					flag = false;
+				}
+				
+				if(flag) {
+					String graphFilename = JOptionPane.showInputDialog("enter filename");
+					
+					
+					try {
+						Graph_Algo graphLoad = new Graph_Algo();
+						graphLoad.init(graphFilename);
+						dgraph = graphLoad.copy();
+						
+						repaint();
+						
+						
+
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(mainPanel, "File not found", "ERROR",JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
 
 		//BUTTONS LISTENERS
 
 		save.addActionListener(new ActionListener() {   			//save file
 
-			String graphFilename = "";
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				String graphFilename = "";
+
 				graphFilename = JOptionPane.showInputDialog("enter filename");
 
 				try {
@@ -122,12 +177,14 @@ public class fourth extends JFrame implements MouseListener {
 
 		shortestPathDist.addActionListener(new ActionListener() {   //compute shortest dist
 
-			int src;
-			int dest;
-			graph dgraph = graph.getGraph();
+		
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				int src;
+				int dest;
+				graph dgraph = graph.getGraph();
 				String s = JOptionPane.showInputDialog(mainPanel, "Enter source vertex ID");
 				String d = JOptionPane.showInputDialog(mainPanel, "Enter destination vertex ID");
 				node_data source = null;
@@ -157,12 +214,14 @@ public class fourth extends JFrame implements MouseListener {
 		shortestPath.addActionListener(new ActionListener() {
 
 
-			int src;
-			int dest;
-			graph dgraph = graph.getGraph();
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {			
+
+				int src=-1;
+				int dest=-1;
+				graph dgraph = graph.getGraph();
+				
 				String s = JOptionPane.showInputDialog(mainPanel, "Enter source vertex ID");
 				String d = JOptionPane.showInputDialog(mainPanel, "Enter destination vertex ID");
 				node_data source = null;
@@ -210,16 +269,18 @@ public class fourth extends JFrame implements MouseListener {
 			}
 		});
 
-		tsp.addActionListener(new ActionListener() {					//DOESNT WORK
+		
+		
+		tsp.addActionListener(new ActionListener() {					//Does WORK
 
-			int amount = 0;
-			LinkedList<Integer> mustPass = new LinkedList<Integer>();
-			boolean flag = true;
-			graph dgraph = graph.getGraph();
-			String input = "";
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int amount = 0;
+				LinkedList<Integer> mustPass = new LinkedList<Integer>();
+				boolean flag = true;
+				graph dgraph = graph.getGraph();
+				String input = "";
 				input = JOptionPane.showInputDialog("enter amount of vertices to pass through");
 				try {
 					amount = Integer.parseInt(input);
@@ -280,7 +341,7 @@ public class fourth extends JFrame implements MouseListener {
 			}
 		});
 
-		addEdge.addActionListener(new ActionListener() { 
+		addEdge.addActionListener(new ActionListener() { 			//stop request
 
 
 
@@ -301,7 +362,7 @@ public class fourth extends JFrame implements MouseListener {
 					src = Integer.parseInt(srcString);
 					dest = Integer.parseInt(destString);
 					weight = Double.parseDouble(weightString);
-					if(weight<0) {
+					if(weight<=0) {													//dijkstra only works with positive weight
 						throw new RuntimeException();
 					}
 
@@ -322,7 +383,7 @@ public class fourth extends JFrame implements MouseListener {
 			}
 		});
 
-		removeEdge.addActionListener(new ActionListener() {
+		removeEdge.addActionListener(new ActionListener() {			//stop request
 
 
 			@Override
@@ -483,9 +544,20 @@ public class fourth extends JFrame implements MouseListener {
 					g2.drawLine(p.ix()+5, p.iy()+5, pDest.ix()+5, pDest.iy()+5);
 
 					g.setColor(Color.BLACK);
+					double midX = ((p.x()+pDest.x())/2);
+					double midY = ((p.y()+pDest.y())/2);
+					
+					double quarterX = ((midX+pDest.x())/2);
+					double quarterY = ((midY+pDest.y())/2);
+					
+					int eighthX = (int)((quarterX+pDest.x())/2);
+					int eighthY = (int)((quarterY+pDest.y())/2);
 
 
-					g.drawString(""+edge.getWeight(), (int)((p.x()+pDest.x())/2)+7,(int)((p.y()+pDest.y())/2)+7);		
+					g.drawString(""+edge.getWeight(), (int)midX+7,(int)midY+7);		
+					g.setColor(Color.YELLOW);
+
+					g.fillOval(eighthX+3, eighthY+3, 5, 5);		//add point an eighth away of destination node indicating direction
 					continue;
 				}
 
@@ -498,15 +570,27 @@ public class fourth extends JFrame implements MouseListener {
 				g2.drawLine(p.ix()+5, p.iy()+5, pDest.ix()+5, pDest.iy()+5);
 
 				g.setColor(Color.DARK_GRAY);
+				
+				double midX = ((p.x()+pDest.x())/2);
+				double midY = ((p.y()+pDest.y())/2);
+				
+				double quarterX = ((midX+pDest.x())/2);
+				double quarterY = ((midY+pDest.y())/2);
+				
+				int eighthX = (int)((quarterX+pDest.x())/2);
+				int eighthY = (int)((quarterY+pDest.y())/2);
 
-				g.drawString(""+edge.getWeight(), (int)((p.x()+pDest.x())/2)+7,(int)((p.y()+pDest.y())/2)+7);
+				g.drawString(""+edge.getWeight(), (int)midX+7, (int)midY+7);
+				g.setColor(Color.YELLOW);
+
+				g.fillOval(eighthX+3, eighthY+3, 5, 5);			//add point an eighth away of destination node indicating direction
 
 
 
 
 			}
 		}
-		for(node_data node : nodes) {
+		for(node_data node : nodes) {				//paint nodes on top of edges
 
 
 
@@ -529,7 +613,6 @@ public class fourth extends JFrame implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 
-		double weight;
 		DGraph.Node newNode ;
 
 		int x = e.getX();
@@ -543,13 +626,8 @@ public class fourth extends JFrame implements MouseListener {
 
 		int input = JOptionPane.showConfirmDialog(mainPanel, "Create new node?", "New Node", JOptionPane.YES_NO_OPTION);
 		if(input == JOptionPane.YES_OPTION) {
-			String weightString = JOptionPane.showInputDialog("Enter weight (positive real number)");
-			try {
-				weight=Double.parseDouble(weightString);
-				if(weight<0) {
-					throw new RuntimeException();
-				}
-				newNode = new DGraph.Node(id, weight, x, y);
+			try {				
+				newNode = new DGraph.Node(id, 1, x, y);
 				dgraph.addNode(newNode);
 				repaint();
 
