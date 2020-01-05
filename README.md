@@ -13,10 +13,10 @@ Clone this repository to your favourite directory, and open the fantastic GUI bu
 
 ## how to GUI
 
-![image](https://user-images.githubusercontent.com/34131906/71783444-813a6b00-2fef-11ea-8bf4-0bbda1de4ff1.png)
 
 Step 1: Decide if you want to load a graph or draw your own magnificent graph from scratch
 
+![image](https://user-images.githubusercontent.com/34131906/71783484-1b9aae80-2ff0-11ea-8083-17f0b71d0381.png)
 
 Step 2: Choose a file or start creating your graph.
 
@@ -29,3 +29,6 @@ Everything else in the GUI is self-explanatory
 Don't forget to save your beautiful graph.
 
 The yellow dot indicates the direction of the edge!!!!
+
+![image](https://user-images.githubusercontent.com/34131906/71783444-813a6b00-2fef-11ea-8bf4-0bbda1de4ff1.png)
+
