@@ -40,7 +40,7 @@ public class fourth extends JFrame implements MouseListener {
 	JButton addEdge;
 
 	JButton exit;
-	
+
 	JMenuItem load;
 
 
@@ -54,13 +54,13 @@ public class fourth extends JFrame implements MouseListener {
 	public fourth(Graph_Algo graph) {
 		this.graph = graph;
 
-		//Container pane = getContentPane();
+		
 
 		menubar = new JMenuBar();
 		menuFile = new JMenu("file");
-		
+
 		load = new JMenuItem("load graph from file");
-		
+
 		menuFile.add(load);
 
 		mainPanel = new JPanel();
@@ -73,16 +73,14 @@ public class fourth extends JFrame implements MouseListener {
 		graphs.setBorder(new TitledBorder("Graph"));
 		mainPanel.add(graphs);
 
-		//pane.setLayout(new FlowLayout());
 		setSize(HEIGHT,WIDTH);
 		setLocationRelativeTo(null);
-		setTitle("Draw Graph from file");
+		setTitle("Draw Graph");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		graphs.addMouseListener(this);
 		menubar.add(menuFile);
-		mainPanel.add(menubar, BorderLayout.BEFORE_FIRST_LINE);
 
 		graphs.setBackground(Color.LIGHT_GRAY);
 
@@ -105,18 +103,18 @@ public class fourth extends JFrame implements MouseListener {
 		addEdge = new JButton("add Edge");
 
 		exit = new JButton("QUIT");
-		
+
 		//MENU LISTENERS
-		
+
 		load.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				boolean flag=true;
 				graph dgraph = graph.getGraph();
 
-				
+
 				int save = JOptionPane.showConfirmDialog(mainPanel, "Do you want to save your graph?", "Unsaved data", JOptionPane.YES_NO_CANCEL_OPTION);
 				if(save == JOptionPane.YES_OPTION) {					
 					String graphFilename = "";
@@ -133,19 +131,19 @@ public class fourth extends JFrame implements MouseListener {
 				else if(save == JOptionPane.CANCEL_OPTION) {
 					flag = false;
 				}
-				
+
 				if(flag) {
 					String graphFilename = JOptionPane.showInputDialog("enter filename");
-					
-					
+
+
 					try {
 						Graph_Algo graphLoad = new Graph_Algo();
 						graphLoad.init(graphFilename);
 						dgraph = graphLoad.copy();
-						
+
 						repaint();
-						
-						
+
+
 
 					} catch (Exception e2) {
 						JOptionPane.showMessageDialog(mainPanel, "File not found", "ERROR",JOptionPane.ERROR_MESSAGE);
@@ -161,27 +159,33 @@ public class fourth extends JFrame implements MouseListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String graphFilename = "";
+				String graphFilename;
+				boolean flag = true;
 
 				graphFilename = JOptionPane.showInputDialog("enter filename");
 
-				try {
-					graph.save(graphFilename);
-
-				} catch (Exception e2) {
-					JOptionPane.showMessageDialog(mainPanel, "Error occured", "ERROR",JOptionPane.ERROR_MESSAGE);
+				if(graphFilename==null||graphFilename.contentEquals("")) { //if input was canceled or is empty
+					flag = false;					
 				}
 
+				if(flag) {
+					try {
+						graph.save(graphFilename);
+
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(mainPanel, "Error occured", "ERROR",JOptionPane.ERROR_MESSAGE);
+					}
+				}
 			}
 		});
 
 		shortestPathDist.addActionListener(new ActionListener() {   //compute shortest dist
 
-		
+
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				int src;
 				int dest;
 				graph dgraph = graph.getGraph();
@@ -221,7 +225,7 @@ public class fourth extends JFrame implements MouseListener {
 				int src=-1;
 				int dest=-1;
 				graph dgraph = graph.getGraph();
-				
+
 				String s = JOptionPane.showInputDialog(mainPanel, "Enter source vertex ID");
 				String d = JOptionPane.showInputDialog(mainPanel, "Enter destination vertex ID");
 				node_data source = null;
@@ -269,8 +273,8 @@ public class fourth extends JFrame implements MouseListener {
 			}
 		});
 
-		
-		
+
+
 		tsp.addActionListener(new ActionListener() {					//Does WORK
 
 
@@ -458,7 +462,7 @@ public class fourth extends JFrame implements MouseListener {
 
 				boolean connected = graph.isConnected();
 				if(connected) {
-					
+
 					JOptionPane.showMessageDialog(mainPanel,  "The graph is strongly connected");
 
 				}
@@ -546,15 +550,18 @@ public class fourth extends JFrame implements MouseListener {
 					g.setColor(Color.BLACK);
 					double midX = ((p.x()+pDest.x())/2);
 					double midY = ((p.y()+pDest.y())/2);
-					
+
 					double quarterX = ((midX+pDest.x())/2);
 					double quarterY = ((midY+pDest.y())/2);
-					
+
 					int eighthX = (int)((quarterX+pDest.x())/2);
 					int eighthY = (int)((quarterY+pDest.y())/2);
 
+					double weight = edge.getWeight();
+					
+					weight = Math.round(weight * 100.0) / 100.0;    //show only 2 decimal places
 
-					g.drawString(""+edge.getWeight(), (int)midX+7,(int)midY+7);		
+					g.drawString(""+weight, (int)midX+7,(int)midY+7);		
 					g.setColor(Color.YELLOW);
 
 					g.fillOval(eighthX+3, eighthY+3, 5, 5);		//add point an eighth away of destination node indicating direction
@@ -570,17 +577,21 @@ public class fourth extends JFrame implements MouseListener {
 				g2.drawLine(p.ix()+5, p.iy()+5, pDest.ix()+5, pDest.iy()+5);
 
 				g.setColor(Color.DARK_GRAY);
-				
+
 				double midX = ((p.x()+pDest.x())/2);
 				double midY = ((p.y()+pDest.y())/2);
-				
+
 				double quarterX = ((midX+pDest.x())/2);
 				double quarterY = ((midY+pDest.y())/2);
-				
+
 				int eighthX = (int)((quarterX+pDest.x())/2);
 				int eighthY = (int)((quarterY+pDest.y())/2);
+				
+				double weight = edge.getWeight();
+				
+				weight = Math.round(weight * 100.0) / 100.0;			//show only 2 decimal places
 
-				g.drawString(""+edge.getWeight(), (int)midX+7, (int)midY+7);
+				g.drawString(""+weight, (int)midX+7, (int)midY+7);
 				g.setColor(Color.YELLOW);
 
 				g.fillOval(eighthX+3, eighthY+3, 5, 5);			//add point an eighth away of destination node indicating direction
@@ -623,11 +634,15 @@ public class fourth extends JFrame implements MouseListener {
 
 
 		int id = dgraph.nodeSize()+1;
+		
+		while(dgraph.getNode(id)!=null) {
+			id++;
+		}
 
 		int input = JOptionPane.showConfirmDialog(mainPanel, "Create new node?", "New Node", JOptionPane.YES_NO_OPTION);
 		if(input == JOptionPane.YES_OPTION) {
 			try {				
-				newNode = new DGraph.Node(id, 1, x, y);
+				newNode = new DGraph.Node(id, x, y);
 				dgraph.addNode(newNode);
 				repaint();
 

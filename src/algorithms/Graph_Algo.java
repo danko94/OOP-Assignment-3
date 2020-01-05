@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 
 import dataStructure.DGraph;
 import dataStructure.DGraph.Node;
@@ -27,7 +28,15 @@ import dataStructure.node_data;
  */
 public class Graph_Algo implements graph_algorithms, Serializable {
 
-	private graph dGraph = new DGraph();
+	private graph dGraph;
+	
+	public Graph_Algo() {
+		dGraph = new DGraph();
+	}
+	
+	public Graph_Algo(graph g) {
+		this.dGraph=g;
+	}
 
 	@Override
 	public void init(graph g) {
@@ -70,12 +79,14 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 	 */
 	@Override
 	public boolean isConnected() {
-		boolean connected = this.DFS();
+		if(this.dGraph.nodeSize()==0||this.dGraph.nodeSize()==1)
+			return true;
+		boolean connected = this.DFSiterative();
 		Graph_Algo trans = new Graph_Algo();
 		if (connected) {
 			trans.init(this.getTranspose());
-			;
-			connected = trans.DFS();
+			
+			connected = trans.DFSiterative();
 		}
 		return connected;
 
@@ -215,11 +226,56 @@ public class Graph_Algo implements graph_algorithms, Serializable {
 		}
 		return graphCopy;
 	}
+	/**
+	 * iterative "DFS" for big inputs
+	 * @return
+	 */
+	private boolean DFSiterative() {
+		
+		boolean connected = true;
+		
+		Collection<node_data> nodes = this.dGraph.getV();
+		for (node_data n : nodes) {
+			n.setTag(0); //set to not visited
+		}
+		
+		Iterator<node_data> iter = nodes.iterator();
+		node_data start = iter.next(); // get first item (any node to start dfs from)
+				
+		Stack<node_data> nodeStack = new Stack<node_data>();
+		
+		nodeStack.push(start);
+		
+		while(!nodeStack.isEmpty()) {
+			node_data currentNode = nodeStack.pop();			
+			 if(currentNode.getTag() == 0) 
+             {  
+				 currentNode.setTag(1);
+             } 
+			 Collection<edge_data> edges = this.dGraph.getE(currentNode.getKey());
+			 for(edge_data e : edges) {		//iterate on all adjacent nodes
+				 node_data adjacentNode = this.dGraph.getNode(e.getDest());
+				 if(adjacentNode.getTag()!=1) { //if adjacent node has been visited
+					 nodeStack.push(adjacentNode);
+				 }
+			 }
+		}
+		
+		for(node_data n : nodes) {  //check if there are nodes that have not been visited
+			if(n.getTag()==0) {
+				connected = false;
+				return connected;
+			}
+		}
+		
+		return connected;
+		
+	}
 
 	/**
 	 * modified DFS algorithm. just checks if every node is reachable from starting
 	 * node
-	 * 
+	 * method is recursive and therefore does not work for really big input (>100,000 nodes)
 	 * @return true if connected
 	 */
 	private boolean DFS() {

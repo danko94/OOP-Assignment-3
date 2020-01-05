@@ -19,6 +19,13 @@ public class DGraph implements graph, Serializable{
 		int tag;
 		String info;
 		
+		public Edge() {
+			this.dest=-1;
+			this.src=-1;
+			this.weight=-1;
+			this.info="free edge";
+		}
+		
 		public Edge(int dest, int src, double weight) {
 			this.dest=dest;
 			this.src=src;
@@ -73,12 +80,43 @@ public class DGraph implements graph, Serializable{
 	
 	public static class Node implements node_data, Comparable<node_data>, Serializable{
 		
-		Point3D location;
-		int key;
-		int tag;
-		double weight;
-		String info;
-		Map<Integer, edge_data> adjList; //key is destination
+		private Point3D location;
+		private int key;
+		private int tag;
+		private double weight;
+		private String info;
+		private Map<Integer, edge_data> adjList; //key is destination
+		
+		private final int X_GUI_OFFSET = 155;
+		private final int Y_GUI_OFFSET = 25;
+		
+		private final int X_GUI_WINDOWRANGE = 580;
+		private final int Y_GUI_WINDOWRANGE = 630;
+
+		
+		public Node() {
+			adjList = new HashMap<Integer, edge_data>();
+			this.key = -1;
+			this.info = "free node";
+			this.weight = -1;
+			
+		}
+		
+		
+		public Node(int key) {
+			adjList = new HashMap<Integer, edge_data>();
+			this.key = key;	
+			info = "";
+			
+			double rand = Math.random();
+			double x = rand*(X_GUI_WINDOWRANGE)+X_GUI_OFFSET;
+			rand = Math.random();
+			double y = rand*(Y_GUI_WINDOWRANGE)+Y_GUI_OFFSET;			//numbers are specific for size of GUI
+
+			Point3D p = new Point3D(x,y);
+			
+			this.location = p;
+		}
 		
 		public Node(int key, double weight) {
 			adjList = new HashMap<Integer, edge_data>();
@@ -87,9 +125,9 @@ public class DGraph implements graph, Serializable{
 			info = "";
 			
 			double rand = Math.random();
-			double x = rand*(580)+150;
+			double x = rand*(X_GUI_WINDOWRANGE)+X_GUI_OFFSET;
 			rand = Math.random();
-			double y = rand*(630)+100;
+			double y = rand*(Y_GUI_WINDOWRANGE)+Y_GUI_OFFSET;			//numbers are specific for size of GUI
 
 			Point3D p = new Point3D(x,y);
 			
@@ -101,7 +139,16 @@ public class DGraph implements graph, Serializable{
 			this.weight = weight;	
 			info = "";
 			
-			Point3D p = new Point3D(x+150, y+50);
+			Point3D p = new Point3D(x+X_GUI_OFFSET, y+Y_GUI_OFFSET);		//Offset is for GUI
+			this.location=p;
+			
+		}
+		public Node(int key, double x, double y) {
+			adjList = new HashMap<Integer, edge_data>();
+			this.key = key;
+			info = "";
+			
+			Point3D p = new Point3D(x+X_GUI_OFFSET, y+Y_GUI_OFFSET);
 			this.location=p;
 			
 		}
@@ -118,8 +165,7 @@ public class DGraph implements graph, Serializable{
 			return e;
 		}
 		public int removeAllEdges() {
-			//ArrayList <edge_data> edges = new ArrayList<edge_data>(adjList.values());
-			int toRemove = adjList.values().size();		
+			int toRemove = adjList.values().size();	
 			return toRemove;
 
 		}
@@ -127,6 +173,12 @@ public class DGraph implements graph, Serializable{
 		public int getKey() {
 			return key;
 		}
+		
+		public void setKey(int key) {
+			this.key=key;
+		}
+		
+		
 
 		@Override
 		public Point3D getLocation() {
@@ -135,7 +187,8 @@ public class DGraph implements graph, Serializable{
 
 		@Override
 		public void setLocation(Point3D p) {
-			this.location = p;			
+			Point3D offsetPoint = new Point3D(p.x()+X_GUI_OFFSET, p.y()+Y_GUI_OFFSET); //adjust to GUI offset
+			this.location = offsetPoint;			
 		}
 
 		@Override
@@ -173,7 +226,7 @@ public class DGraph implements graph, Serializable{
 
 		
 		@Override
-		public int compareTo(node_data o) {
+		public int compareTo(node_data o) {		//comparator for priority queue
 			if(this.getWeight()>o.getWeight())
 				return 1;
 			else if(this.getWeight()<o.getWeight())
@@ -217,9 +270,11 @@ public class DGraph implements graph, Serializable{
 	}
 
 	@Override
-	public void addNode(node_data n) {
+	public void addNode(node_data n) throws RuntimeException{
 		int id = n.getKey();
-		if(graph.containsKey(id)) {
+		if(id==-1)
+			throw new RuntimeException("id is invalid");
+		if(graph.containsKey(id)) {			//maybe throw exception
 			return;
 		}
 		int key = n.getKey();
@@ -269,11 +324,10 @@ public class DGraph implements graph, Serializable{
 			return null;
 		}
 		int toRemove = ((Node) nD).removeAllEdges();
-		for(Map.Entry<Integer, node_data> entry : graph.entrySet()) {
-			node_data vertix = entry.getValue();
-			if(null!=((Node) vertix).removeEdge(key));
-				decreaseEdgeCount();
-				increaseModeCount();
+		Collection<node_data> nodes = this.getV();
+		for(node_data n : nodes) {
+			edge_data e = this.removeEdge(n.getKey(), key);
+			
 		}
 		for(int i=0;i<toRemove;i++) {
 			decreaseEdgeCount();
@@ -288,6 +342,10 @@ public class DGraph implements graph, Serializable{
 	public edge_data removeEdge(int src, int dest) {
 		node_data nD = graph.get(src);
 		edge_data eD = ((Node) nD).removeEdge(dest);
+		if(eD!=null) {
+			increaseModeCount();
+			decreaseEdgeCount();
+		}
 		return eD;
 	}
 
