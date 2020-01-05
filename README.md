@@ -27,3 +27,5 @@ TSP stands for: find the (not necessarily shortest) path that passes through a g
 Everything else in the GUI is self-explanatory
 
 Don't forget to save your beautiful graph.
+
+The yellow dot indicates the direction of the edge!!!!
