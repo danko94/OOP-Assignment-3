@@ -2,6 +2,8 @@
 
 Welcome to our Project!
 
+![wazeofmaze](https://user-images.githubusercontent.com/34131906/71783395-e346a080-2fee-11ea-8083-fe44802b57aa.png)
+
 In this project you can play around with directed graphs :)
 
 ## Installation
