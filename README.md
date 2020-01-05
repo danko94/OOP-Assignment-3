@@ -13,6 +13,8 @@ Clone this repository to your favourite directory, and open the fantastic GUI bu
 
 ## how to GUI
 
+![image](https://user-images.githubusercontent.com/34131906/71783444-813a6b00-2fef-11ea-8bf4-0bbda1de4ff1.png)
+
 Step 1: Decide if you want to load a graph or draw your own magnificent graph from scratch
 
 
