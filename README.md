@@ -20,6 +20,8 @@ Step 1: Decide if you want to load a graph or draw your own magnificent graph fr
 
 Step 2: Choose a file or start creating your graph.
 
+![image](https://user-images.githubusercontent.com/34131906/71783512-5b619600-2ff0-11ea-8151-9b655eaaa24f.png)
+
 Click to add Node
 
 TSP stands for: find the (not necessarily shortest) path that passes through a given list of Nodes
